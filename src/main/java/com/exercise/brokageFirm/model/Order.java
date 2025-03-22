@@ -6,12 +6,13 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="orders")
+@Table(name = "orders")
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
 @Getter
 @ToString
+@Builder
 public class Order {
 
     @Id
@@ -32,7 +33,7 @@ public class Order {
     private Integer size;
 
     @Column(nullable = false)
-    private Double price;
+    private Integer price;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
