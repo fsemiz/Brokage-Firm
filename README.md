@@ -29,6 +29,12 @@ POST http://localhost:9090/customers/register
   "isAdmin": true
 }
 ```
+#### Get all the Customers
+```http
+GET http://localhost:9090/customers
+```
+
+Gets the list of all customers.
 
 ---
 
@@ -59,6 +65,11 @@ POST http://localhost:9090/assets
     "usableSize": 5000    
 }
 ```
+#### Get all the Assets
+```http
+GET http://localhost:9090/assets
+```
+Gets all the assets.
 
 ---
 
@@ -90,6 +101,15 @@ POST http://localhost:9090/orders
     "size": 1,
     "price": 100
 }
+```
+
+#### Get all the Orders
+```http
+GET http://localhost:9090/orders
+```
+#### Cancel the Order
+```http
+DELETE http://localhost:9090/orders/{orderId}
 ```
 
 ---
