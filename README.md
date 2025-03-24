@@ -2,6 +2,20 @@
 
 This project provides a RESTful API for a brokerage firm, allowing customers to register, create orders, manage assets, and match orders as an admin.
 
+## Technologies Used
+
+Java
+
+Spring Boot
+
+Spring Security
+
+Hibernate
+
+H2 Database (for development)
+
+Maven
+
 ## Endpoints
 
 ### Customer Endpoints
@@ -145,5 +159,9 @@ PUT http://localhost:9090/admin/match-orders/1
 
 ## Notes
 - Orders will not be matched against each other but will be processed sequentially by an admin.
+- A customer table is added and if they are admin they have the ability the match the orders. Otherwise they can see their own assets and orders.
+- All orders are initially added PENDING and usableSizes are reduced from TRY for further orders.
+- Sizes and usable sizes are updated when the order is matched or cancelled.
+- TRY usable sizes are updated by the asset size * price (total cost).
 - The system tracks both `size` and `usableSize` for each asset, ensuring correct balance management.
 - Spring security default username password are admin and admin respectively
