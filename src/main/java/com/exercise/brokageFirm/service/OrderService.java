@@ -60,8 +60,8 @@ public class OrderService {
         }
 
         Asset asset = assetService.findByCustomerIdAndAssetName(order.getCustomerId(), order.getOrderSide() == OrderSide.BUY ? "TRY" : order.getAssetName());
-
-        asset.setUsableSize(asset.getUsableSize() + order.getSize());
+        int totalCost = order.getPrice() * order.getSize();
+        asset.setUsableSize(asset.getUsableSize() + totalCost);
 
         assetService.updateAsset(asset);
         order.setStatus(OrderStatus.CANCELED);
