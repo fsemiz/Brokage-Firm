@@ -39,15 +39,14 @@ public class OrderService {
 
         assetService.updateAsset(tryAsset);
 
-        Order order = Order.builder()
-                .customerId(customerId)
-                .assetName(assetName)
-                .orderSide(orderSide)
-                .size(size)
-                .price(price)
-                .status(OrderStatus.PENDING)
-                .createDate(LocalDateTime.now())
-                .build();
+        Order order = new Order();
+        order.setCustomerId(customerId);
+        order.setAssetName(assetName);
+        order.setOrderSide(orderSide); // BUY // SELL
+        order.setSize(size);
+        order.setPrice(price);
+        order.setStatus(OrderStatus.PENDING);
+        order.setCreateDate(LocalDateTime.now());
 
         return orderRepository.save(order);
 
@@ -58,8 +57,7 @@ public class OrderService {
     }
 
     public void cancelOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
 
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new RuntimeException("Only PENDING orders can be canceled");
