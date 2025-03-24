@@ -15,7 +15,8 @@ class SecurityConfig {
                         new AntPathRequestMatcher("/assets/**"),
                         new AntPathRequestMatcher("/orders/**"),
                         new AntPathRequestMatcher("/customers/**"),
-                        new AntPathRequestMatcher("/trades/**")
+                        new AntPathRequestMatcher("/trades/**"),
+                        new AntPathRequestMatcher("/admin/**")
                 );
     }
 }

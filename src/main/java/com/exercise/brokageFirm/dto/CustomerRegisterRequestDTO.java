@@ -14,4 +14,9 @@ public class CustomerRegisterRequestDTO {
     private String password;
 
     private boolean isAdmin;
+    // Getter metodu eklenmeli!
+    public Boolean getIsAdmin() { return isAdmin; }
+
+    public void setIsAdmin(Boolean isAdmin) { this.isAdmin = isAdmin; }
+
 }

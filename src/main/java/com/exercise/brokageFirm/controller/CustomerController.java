@@ -19,7 +19,7 @@ public class CustomerController {
 
     @PostMapping("/register")
     public ResponseEntity<Customer> registerCustomer(@RequestBody CustomerRegisterRequestDTO request) {
-        Customer customer = customerService.registerCustomer(request.getUsername(), request.getPassword(), request.isAdmin());
+        Customer customer = customerService.registerCustomer(request.getUsername(), request.getPassword(), request.getIsAdmin());
         return ResponseEntity.status(HttpStatus.CREATED).body(customer);
     }
 

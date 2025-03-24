@@ -23,21 +23,17 @@ public class OrderService {
 
         if (OrderSide.BUY == orderSide) {
             int totalCost = size * price;
-            if (tryAsset.getUsableSize() >= totalCost) {
-                tryAsset.setUsableSize(tryAsset.getUsableSize() - totalCost);
-            } else {
+            if (tryAsset.getUsableSize() < size) {
                 throw new RuntimeException("Not enough TRY balance");
             }
+            tryAsset.setUsableSize(tryAsset.getUsableSize() - totalCost);
+            assetService.updateAsset(tryAsset);
         } else {
             Asset sellingAsset = assetService.findByCustomerIdAndAssetName(customerId, assetName);
             if (sellingAsset.getUsableSize() < size) {
                 throw new RuntimeException("Not enough asset balance");
             }
-            sellingAsset.setUsableSize(sellingAsset.getUsableSize() - size);
-            assetService.updateAsset(sellingAsset);
         }
-
-        assetService.updateAsset(tryAsset);
 
         Order order = new Order();
         order.setCustomerId(customerId);
@@ -65,14 +61,61 @@ public class OrderService {
 
         Asset asset = assetService.findByCustomerIdAndAssetName(order.getCustomerId(), order.getOrderSide() == OrderSide.BUY ? "TRY" : order.getAssetName());
 
-        if (order.getOrderSide() == OrderSide.BUY) {
-            asset.setUsableSize(asset.getUsableSize() + order.getSize() * order.getPrice());
-        } else {
-            asset.setUsableSize(asset.getUsableSize() + order.getSize());
-        }
+        asset.setUsableSize(asset.getUsableSize() + order.getSize());
 
         assetService.updateAsset(asset);
         order.setStatus(OrderStatus.CANCELED);
         orderRepository.save(order);
+    }
+
+    public void matchPendingOrders(Long adminId) {
+        List<Order> pendingOrders = orderRepository.findByStatus(OrderStatus.PENDING);
+
+        for (Order order : pendingOrders) {
+            int totalCost = order.getSize() * order.getPrice();
+            if(order.getOrderSide() == OrderSide.BUY) {
+                // TRY bakiyesi kontrolü
+                Asset tryAsset = assetService.findByCustomerIdAndAssetName(order.getCustomerId(), "TRY");
+                if (tryAsset == null || tryAsset.getUsableSize() < totalCost) {
+                    continue; // Yetmiyorsa PENDING bırak
+                }
+
+                // TRY bakiyesinden düş
+                tryAsset.setSize(tryAsset.getSize() - totalCost);
+                assetService.updateAsset(tryAsset);
+
+                // Satın alınan varlığı güncelle
+                Asset boughtAsset = assetService.findByCustomerIdAndAssetName(order.getCustomerId(), order.getAssetName());
+                if (boughtAsset != null) {
+                    boughtAsset.setSize(boughtAsset.getSize() + order.getSize());
+                    boughtAsset.setUsableSize(boughtAsset.getUsableSize() + order.getSize());
+                    assetService.updateAsset(boughtAsset);
+                } else {
+                    Asset boughtAsset2 = new Asset();
+                    boughtAsset2.setCustomerId(order.getCustomerId());
+                    boughtAsset2.setAssetName(order.getAssetName());
+                    boughtAsset2.setSize(order.getSize());
+                    boughtAsset2.setUsableSize(order.getSize());
+                    assetService.updateAsset(boughtAsset2);
+                }
+            }
+            else {
+                // TRY bakiyesine ekle
+                Asset tryAsset = assetService.findByCustomerIdAndAssetName(order.getCustomerId(), "TRY");
+                tryAsset.setSize(tryAsset.getSize() + totalCost);
+                tryAsset.setUsableSize(tryAsset.getUsableSize() + totalCost);
+
+                // Satılan varlığı güncelle
+                Asset soldAsset = assetService.findByCustomerIdAndAssetName(order.getCustomerId(), order.getAssetName());
+                if (soldAsset != null) {
+                    soldAsset.setSize(soldAsset.getSize() - order.getSize());
+                    soldAsset.setUsableSize(soldAsset.getUsableSize() - order.getSize());
+                    assetService.updateAsset(soldAsset);
+                }
+            }
+                // Order'ı MATCHED olarak güncelle
+                order.setStatus(OrderStatus.MATCHED);
+                orderRepository.save(order);
+        }
     }
 }

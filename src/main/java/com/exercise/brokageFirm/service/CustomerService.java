@@ -31,6 +31,12 @@ public class CustomerService {
         return customerRepository.findByUsername(username);
     }
 
+    public boolean isAdmin(Long customerId) {
+        return customerRepository.findById(String.valueOf(customerId))
+                .map(Customer::isAdmin)
+                .orElse(false);
+    }
+
     public List<Customer> getAllCustomers() {
         return customerRepository.findAll();
     }
