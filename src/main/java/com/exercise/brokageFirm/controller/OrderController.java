@@ -4,6 +4,7 @@ import com.exercise.brokageFirm.dto.OrderCreateRequestDTO;
 import com.exercise.brokageFirm.model.Order;
 import com.exercise.brokageFirm.model.OrderSide;
 import com.exercise.brokageFirm.service.OrderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody OrderCreateRequestDTO request) {
+    public ResponseEntity<Order> createOrder(@Valid @RequestBody OrderCreateRequestDTO request) {
         Order createdOrder = orderService.createOrder(
                 request.getCustomerId(),
                 request.getAssetName(),
